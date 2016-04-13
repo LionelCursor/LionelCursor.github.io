@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="null"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="在年轻的时候，或修道还没有成功的时候，或者倒霉得没有办法的时候，就要“沉潜”在深水里，动都不要动。"><title>Android面试总结 | Damon Lei</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/3.0.3/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Android面试总结</h1><a id="logo" href="/.">Damon Lei</a><p class="description">博客</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> Home</i></a><a href="/archives/"><i class="fa fa-archive"> Archive</i></a><a href="/about/"><i class="fa fa-user"> About</i></a><a href="/atom.xml"><i class="fa fa-rss"> RSS</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">Android面试总结</h1><div class="post-meta">May 5, 2015<span> | </span><span class="category"><a href="/categories/Android/">Android</a></span><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><div class="post-content"><p>我5月5号会参加阿里的面试。<br>在准备过程中整理一下自己的知识结构，也参考一些网上别人整理的资料做一个总结。既是给自己做个备忘，不至于学着前面的忘着后面的，同时也为其他人做个分享。</p>
+<p>##基础知识点</p>
+<p>##Android基础知识点</p>
+<p>###资料搜集<br><a href="https://github.com/HIT-Alibaba/interview/wiki" target="_blank" rel="external">HIT-Alibaba/interview</a></p>
+<p>###知识点</p>
+<ol>
+<li><p>Android系统架构<br>分为四层分别是Application层、Framework层、Runtime层、Linux Kernal层</p>
+</li>
+<li><p><a href="http://blog.csdn.net/mad1989/article/details/22492519" target="_blank" rel="external">Activity/Service 生命周期 以及 如何保证自己的Service不被杀死</a><br>1.优先级setForground()<br>2.<code>onStartCommand()</code>返回值STICKY<br>3.监听钟表事件:这里有一个问题，当监听TIME_TICK的时候，其实内部调用的Alarm是RTC而不是RTC_WAKE所以无法唤醒。还是得看需求。<br>4.在manifest里persistent设置为true<br><a href="http://blog.csdn.net/guolin_blog/article/details/11952435" target="_blank" rel="external"><strong>Service完全解析</strong></a><br>1.Service的基本用法。两种运行方法，生命周期<br>2.Service和Activity进行通信<br>3.Service的销毁方式<br>4.Service和Thread的关系<br>5.创建前台进程<br>6.AIDL(IPC)接口定义语言进行远程进程通信。<br><strong>保持设备唤醒，或者定期唤醒</strong></p>
+</li>
+<li><a href="http://www.cnblogs.com/kross/p/4087780.html" target="_blank" rel="external">Android动画原理分析</a><br>1.<strong>问题，16ms是谁决定的</strong>。（自己模仿的时候可以不断调用post将其post进自己的消息队列（这里不是消息队列，而是一个叫RunQueue的东西））<br>而Animation类，是由Choreographer类决定 最后还是通过Handler来进行的，每10ms sendMessage一次，这个Handler还挺复杂的处理三种不同的消息，还要控制顺序。<br>2.<strong>Animator和Animation有什么</strong><br><a href="http://blog.csdn.net/singwhatiwanna/article/details/17853275" target="_blank" rel="external">Animator源码分析</a><br>Animation上面已经已经说了，下面看一下Animator。View.animate()方法返回的是一个ViewPropertyAnimator类，他有一个成员变量为ValueAnimator。内部有一个叫AnimationHandler的Runnable，它的作用也是向Choreographer类中post自身<br>Choreographer有一个成员变量是boolean:VSYNC(由系统赋值)垂直同步信号。由系统来决定刷新的时间，这样就会比强行的自己赋值的internal要可靠的多，能够更准确的刷新。是通过一个recerver类来接受的这个信号，接受的时候会block，不是线程安全的。</li>
+<li>Handler机制</li>
+<li>Android线程之间，Activity之间的通信。<br>（关于Handler、Looger请参看我的博客）<br>Activity之间的通讯需要说的是EventBus熟悉一下它的结构。<br>EventBus主要有两个逻辑，一个是订阅(subscribe)，一个是分发(post)；两个动作都是按类型进行的。<br>EventBus主要是解耦吧，感觉性能方面不是很高。</li>
+<li>注解开发<br>知道了，注解实际上是由@interface类型定义，然后由元注解修饰如@Documented@Rentention(分为三种Runtime,class,Source)@Target….<br>对于ButterKnife还有一些疑问，先不管了</li>
+<li>Dalvik VS ART<br>现在只知道是ART在安装的时候就将其搞成了native代码（还不知道这个native代码究竟是什么意思）而不是像Dalvik那样Runtime的时候采取执行成bytecode.<br>另外也优化了GC操作</li>
+<li>常用的五种布局方式<br>LinearLayout,RelativeLayout,FrameLayout,AbsoluteLayout,Tablelayout</li>
+<li>广播<br>静态注册动态注册，优先级（可以截取不在分发），IntentFilter，不要执行太久。</li>
+<li>控制反转（设计模式篇）</li>
+<li>Activity的四种加载模式<br>Standard<br>SingleTask<br>SingleTop<br>SingleInstance</li>
+<li>ListView相关<br><a href="http://www.cnblogs.com/sw926/p/3426606.html" target="_blank" rel="external">ItemType</a><br><a href="http://blog.chinaunix.net/uid-29134536-id-4094813.html" target="_blank" rel="external">ListView优化之图片篇</a></li>
+<li><a href="http://blog.csdn.net/luoshengyang/article/details/6946067" target="_blank" rel="external">ContentProvider</a><br>把需要在进程间传输的数据都写到共享内存中去，然后只能通过Binder进程间通信机制来传输一个共享内存的打开文件描述符给对方就好了。在Android系统中，Binder进程间通信机制和匿名共享内存机制结合在一起使用，真是太完美了。</li>
+<li><a href="http://blog.csdn.net/luoshengyang/article/details/6618363" target="_blank" rel="external">Binder机制</a><br><a href="http://my.oschina.net/snail0/blog/312895" target="_blank" rel="external">概念上的分析</a></li>
+<li>[匿名共享内存]</li>
+<li><a href="">如何自定义View</a></li>
+<li><a href="http://blog.csdn.net/windskier/article/details/6966264" target="_blank" rel="external">Android事件分发</a><br>当有事件从硬件设备输入时，system_server端在检测到事件发生时，通过管道(pipe)通知ViewRoot事件发生，此时ViewRoot再去的内存中读取这个事件信息。<br><a href="http://www.cnblogs.com/HighFun/archive/2013/03/26/2979901.html" target="_blank" rel="external">以ontouch为例说明android事件发送机制</a></li>
+<li><a href="https://github.com/HIT-Alibaba/interview/wiki/Android-Large-Image" target="_blank" rel="external">加载大图</a><br>图片会被解压缩为矩阵(分辨率），假设图片的分辨率是3776 <em> 2520，每一点又是由ARGB色组成，每个色素占4个Byte，所以加载这张图片要消耗的内存为： 3776 </em> 2520 * 4byte = 38062080byte 大约要38MB的内存，大小略有出入，因为图片还有一些Exif信息需要存储，会比仅靠分辨率计算要大一些。<br><code>public static BitmapcreateScaledBitmap (Bitmap src, int dstWidth, int dstHeight, boolean filter)</code><br>主要还是做好缓存，，以及Options</li>
+<li>HttpClient和URLConnection的区别，怎么使用https<br>最近在研究Volley框架的源码，发现它在HTTP请求的使用上比较有意思，在Android 2.3及以上版本，使用的是HttpURLConnection，而在Android 2.2及以下版本，使用的是HttpClient</li>
+<li>Percelable Serializable<br>Serializable的作用是为了保存对象的属性到本地文件、数据库、网络流、rmi以方便数据传输，当然这种传输可以是程序内的也可以是两个程序间的。而Android的Parcelable的设计初衷是因为Serializable效率过慢，为了在程序内不同组件间以及不同Android程序间(AIDL)高效的传输数据而设计，这些数据仅在内存中存在，Parcelable是通过IBinder通信的消息的载体。<br>在内存间数据传输时推荐使用Parcelable，如activity间传输数据，而Serializable可将数据持久化方便保存，所以在需要保存或网络传输数据时选择Serializable，因为android不同版本Parcelable可能不同，所以不推荐使用Parcelable进行数据持久化</li>
+<li>Android里跨进程传递数据的几种方案。(Binder,文件[面试官说这个不算],Socket,匿名共享内存（Anonymous Shared Memory))</li>
+<li>ListView里的ViewType机制</li>
+<li><a href="http://www.uml.org.cn/mobiledev/201211221.asp" target="_blank" rel="external">Android中measure过程、WRAP_CONTENT详解以及xml布局文件解析流程浅析</a><br><a href="http://blog.csdn.net/ff20081528/article/details/17560135" target="_blank" rel="external">视图大小计算过程（measure过程）</a></li>
+<li>Listview 的 ViewType机制浅析，主要是复用吧，他其实是存在一个ArryList的数组里的scrapViews，（每一个元素都是一个ArrayList，对应每一中ViewType）</li>
+<li>TextView怎么改变局部颜色(SpannableString或者HTML)</li>
+<li><a href="http://blog.csdn.net/johnsonblog/article/details/7838108" target="_blank" rel="external">Activity A 跳转到 Activity B，生命周期的执行过程是啥？(此处有坑 ActivityA的OnPause和ActivityB的onResume谁先执行)</a></li>
+<li>Android中Handler声明非静态对象会发出警告，为什么，非得是静态的？(Memory Leak)</li>
+<li>ListView使用过程中是否可以调用addView(不能，ListView确实是继承自ViewGroup的)</li>
+<li>Android中的Thread, Looper和Handler机制(附带HandlerThread与AsyncTask)</li>
+<li>Application类的作用 passingData cachingData using Context</li>
+<li>广播注册后不解除注册会有什么问题？(内存泄露)<br>广播分普通广播和Oreder广播</li>
+<li><strong>View绘制流程</strong></li>
+<li>属性动画(Property Animation)和补间动画(Tween Animation)的区别，为什么在3.0之后引入属性动画(官方解释：调用简单)。对于View animation，它只是改变了View对象绘制的位置，而没有改变View对象本身，比如，你有一个Button，坐标（100,100），Width:200,Height:50，而你有一个动画使其变为Width：100，Height：100，你会发现动画过程中触发按钮点击的区域仍是(100,100)-(300,150)。</li>
+<li><strong>有没有使用过EventBus或者Otto框架，主要用来解决什么问题，内部原理</strong></li>
+<li><strong>设计一个网络请求框架(可以参考Volley框架)</strong></li>
+<li><strong>网络图片加载框架</strong></li>
+<li><strong>Android里的LRU算法原理</strong></li>
+<li>BrocastReceive里面可不可以执行耗时操作?（Offcourse not）</li>
+<li>Service onBindService 和startService 启动的区别</li>
+<li><a href="胡凯的博客">Android性能优化</a><br><a href="http://hukai.me/android-training-performance-tips/" target="_blank" rel="external">优化tips</a></li>
+<li><a href="">Bitmap相关</a><br><a href="http://blog.chinaunix.net/uid-29134536-id-4094813.html" target="_blank" rel="external">ListView优化之图片篇</a><br>BitmapFactory.Options o<br>一直觉得decode很高端，原来就是处理流啊。还以为是什么东西，真没意思。</li>
+<li><a href="">Paint相关</a></li>
+</ol>
+<p>##Java基础知识点</p>
+<ol>
+<li>LinkedHashMap extends HashMap<br>保留了HashMap的顺序</li>
+<li>Java静态块 块 变量 加载顺序<br>静态块、静态变量 &gt; 变量、初始块 &gt; 构造函数</li>
+</ol>
+<p>##网络基础知识点</p>
+<ol>
+<li>HTTP<br>HTTP和四种基本请求的理解，get是查，post是改，一个是放在url里，一个是放在包的包体里<br>响应报文:状态行，响应头，响应正文<br>条件GET 304 Not Modified<br>持久连接：避免了TCP重新连接 就是在头中讲Connection改为KeepAlive 基本看服务器支不支持。另外有一定的时间限制。可能不稳定。<br>HTTP管线化：一次发送好几个请求，一次收到一串响应。只能是HTTP/1.1，只能是GET，性能没有太大提高<br>会话跟踪：HTTP无状态，为了知道是哪个用户什么状态就需要跟踪。方法：url重写/隐藏的表单/Cookie/Session<br>两种攻击：摸清请求随便发请求；输入一段JavaScript来添加自己的逻辑。</li>
+<li>TCP<br>三次握手，四次挥手，SYN攻击</li>
+<li>IP<br>广播与多播</li>
+<li>Socket编程基础</li>
+</ol>
+<p>##作品MoFa艺术图文相关<br>图片加载部分<br>蒙阴影Drawabl e setColorFilter</p>
+<p>模糊处理</p>
+<p>SwipeBackLayout</p>
+<p>DecorView</p>
+<p>RenderScript</p>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a data-url="http://LionelCursor.github.io/2015/05/05/Interview-android/" data-id="cimytk42m000f66gx8sp1sst5" class="article-share-link">Share</a><div class="tags"><a href="/tags/Android/">Android</a><a href="/tags/Interview/">Interview</a></div><div class="post-nav"><a href="/2015/05/09/Volley和Cache-Control/" class="pre">Volley和Cache-Control</a><a href="/2015/04/20/Canvas-Paint-And-More/" class="next">Canvas-Paint-And-More</a></div></div></div></div><div class="pure-u-1-4"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://LionelCursor.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> Categories</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Foundation/">Foundation</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Others/">Others</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> Tags</i></div><div class="tagcloud"><a href="/tags/Interview/" style="font-size: 15px;">Interview</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/SourceCode/" style="font-size: 15px;">SourceCode</a> <a href="/tags/Concurrent/" style="font-size: 15px;">Concurrent</a> <a href="/tags/Canvas/" style="font-size: 15px;">Canvas</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/Alg/" style="font-size: 15px;">Alg</a> <a href="/tags/DataStructure/" style="font-size: 15px;">DataStructure</a> <a href="/tags/Quick-Reference/" style="font-size: 15px;">Quick Reference</a> <a href="/tags/Others/" style="font-size: 15px;">Others</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/Summary/" style="font-size: 15px;">Summary</a> <a href="/tags/Debug/" style="font-size: 15px;">Debug</a> <a href="/tags/RxJava/" style="font-size: 15px;">RxJava</a> <a href="/tags/OpenSource/" style="font-size: 15px;">OpenSource</a> <a href="/tags/GitHub/" style="font-size: 15px;">GitHub</a> <a href="/tags/计算机网络/" style="font-size: 15px;">计算机网络</a> <a href="/tags/日志/" style="font-size: 15px;">日志</a> <a href="/tags/web/" style="font-size: 15px;">web</a> <a href="/tags/alg/" style="font-size: 15px;">alg</a> <a href="/tags/读书笔记/" style="font-size: 15px;">读书笔记</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> Recent</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/04/01/用JUnit与Mock框架对Android项目进行单元测试/">用JUnit与Mock框架对Android项目进行单元测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/19/onCreate方法的一次debug/">onCreate方法的一次debug</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/01/Logger-in-xUtils/">Logger in xUtils</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/computer_network/">计算机网络知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/28/LeakCanary原理分析/">LeakCanary原理分析 [转载]</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/28/zxing-android-client/">zxing-android-client</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/24/RxJava3/">ReactiveX Operator 总结 及其它重要概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/24/RxJava2/">RxJava原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/22/RxJava/">RxJava基础应用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/22/初试ios开发/">初试ios开发</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> Blogroll</i></div><ul></ul><a href="http://github.com/LionelCursor" title="我的github" target="_blank">我的github</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">© <a href="/." rel="nofollow">Damon Lei.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="/css/jquery.fancybox.css?v=0.0.0"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?06d5a7998bcfa3c5d037974c6aa847fc";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();
+</script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

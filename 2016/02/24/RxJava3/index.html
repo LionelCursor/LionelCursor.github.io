@@ -1,0 +1,166 @@
+<!DOCTYPE html><html lang="null"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="在年轻的时候，或修道还没有成功的时候，或者倒霉得没有办法的时候，就要“沉潜”在深水里，动都不要动。"><title>ReactiveX Operator 总结 及其它重要概念 | Damon Lei</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/3.0.3/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">ReactiveX Operator 总结 及其它重要概念</h1><a id="logo" href="/.">Damon Lei</a><p class="description">博客</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> Home</i></a><a href="/archives/"><i class="fa fa-archive"> Archive</i></a><a href="/about/"><i class="fa fa-user"> About</i></a><a href="/atom.xml"><i class="fa fa-rss"> RSS</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">ReactiveX Operator 总结 及其它重要概念</h1><div class="post-meta">Feb 24, 2016<span> | </span><span class="category"><a href="/categories/android/">android</a></span><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><div class="clear"><div id="toc" class="toc-article"><div class="toc-title">Contents</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#总览"><span class="toc-number">1.</span> <span class="toc-text">总览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Creating-Observable"><span class="toc-number">2.</span> <span class="toc-text">Creating Observable</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Transforming-Observables"><span class="toc-number">3.</span> <span class="toc-text">Transforming Observables</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Filter-Observables"><span class="toc-number">4.</span> <span class="toc-text">Filter Observables</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Combining-Observable"><span class="toc-number">5.</span> <span class="toc-text">Combining Observable</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Error-Handling-Operators"><span class="toc-number">6.</span> <span class="toc-text">Error Handling Operators</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Observable-Utility-Operators"><span class="toc-number">7.</span> <span class="toc-text">Observable Utility Operators</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Conditional-and-Boolean-Operators"><span class="toc-number">8.</span> <span class="toc-text">Conditional and Boolean Operators</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mathematical-and-Aggregate-Operators"><span class="toc-number">9.</span> <span class="toc-text">Mathematical and Aggregate Operators</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Backpressure-Operators"><span class="toc-number">10.</span> <span class="toc-text">Backpressure Operators</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Connectable-Observable-Operators"><span class="toc-number">11.</span> <span class="toc-text">Connectable Observable Operators</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Operators-to-Convert-Observables"><span class="toc-number">12.</span> <span class="toc-text">Operators to Convert Observables</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Single"><span class="toc-number">13.</span> <span class="toc-text">Single</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Subject"><span class="toc-number">14.</span> <span class="toc-text">Subject</span></a></li></ol></div></div><div class="post-content"><p>其实ReativeX关于Observable或者Subscriber并没有什么好说的，无非就是观察者模式的拓展。<br>真正让<strong>ReactiveX</strong>变得牛逼的是Operator，或者叫”reactive extensions”这也是为什么这套库要叫ReactiveX。</p>
+<p>当然，除此之外，还有其它一些ReactiveX的重要概念。理解他们能够让我们对ReactiveX的使用更加得心应手。</p>
+<a id="more"></a>
+<h2 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h2><p><strong>Creating Observables</strong><br><code>Create</code>, <code>Defer</code>, <code>Empty</code>/<code>Never</code>/<code>Throw</code>, <code>From</code>, <code>Interval</code>, <code>Just</code>, <code>Range</code>, <code>Repeat</code>, <code>Start</code>, and <code>Timer</code></p>
+<p><strong>Transforming Observable Items</strong><br><code>Buffer</code>, <code>FlatMap</code>, <code>GroupBy</code>, <code>Map</code>, <code>Scan</code>, and <code>Window</code></p>
+<p><strong>Filtering Observables</strong><br><code>Debounce</code>, <code>Distinct</code>, <code>ElementAt</code>, <code>Filter</code>, <code>First</code>, <code>IgnoreElements</code>, <code>Last</code>, <code>Sample</code>, <code>Skip</code>, <code>SkipLast</code>, <code>Take</code>, and <code>TakeLast</code></p>
+<p><strong>Combining Observables</strong><br><code>And</code>/<code>Then</code>/<code>When</code>, <code>CombineLatest</code>, <code>Join</code>, <code>Merge</code>, <code>StartWith</code>, <code>Switch</code>, and <code>Zip</code></p>
+<p><strong>Error Handling Operators</strong><br><code>Catch</code> and <code>Retry</code><br><strong>Utility Operators</strong><br><code>Delay</code>, <code>Do</code>, <code>Materialize</code>/<code>Dematerialize</code>, <code>ObserveOn</code>, <code>Serialize</code>, <code>Subscribe</code>, <code>SubscribeOn</code>, <code>TimeInterval</code>, <code>Timeout</code>, <code>Timestamp</code>, and <code>Using</code><br><strong>Conditional and Boolean Operators</strong><br><code>All</code>, <code>Amb</code>, <code>Contains</code>, <code>DefaultIfEmpty</code>, <code>SequenceEqual</code>, <code>SkipUntil</code>, <code>SkipWhile</code>, <code>TakeUntil</code>, and <code>TakeWhile</code></p>
+<p><strong>Mathematical and Aggregate Operators</strong><br><code>Average</code>, <code>Concat</code>, <code>Count</code>, <code>Max</code>, <code>Min</code>, <code>Reduce</code>, and <code>Sum</code></p>
+<p><strong>Converting Observables</strong><br><code>To</code></p>
+<p><strong>Connectable Observable Operators</strong><br><code>Connect</code>, <code>Publish</code>, <code>RefCount</code>, and <code>Replay</code></p>
+<p><strong>Backpressure Operators</strong><br>a variety of operators that enforce particular flow-control policies</p>
+<h2 id="Creating-Observable"><a href="#Creating-Observable" class="headerlink" title="Creating Observable"></a>Creating Observable</h2><p>用来创建新的Observable对象的操作符</p>
+<ul>
+<li><p><code>Create</code> 通过自己的代码调用Subscriber的方法，来手动控制事件的产生。</p>
+</li>
+<li><p><code>Defer</code> 定义一个构建Observable的工厂函数，每当subscribe的时候，就创建一个全新的Subscriber一个全新的Observable，并且不订阅的话就不创建。</p>
+</li>
+<li><p><code>Empty</code> / <code>Never</code> / <code>Throw</code> 非常简单的Observable，Empty只调用一次onComplete Throw只调用一次onError Never则什么也不调用。</p>
+</li>
+<li><p><code>From</code> 通过一些常用的数据结构来构建Observable，包括但不限于Future，Callback，数组</p>
+</li>
+<li><p><code>Interval</code> 每过一定时间，就发送一个递增的整数</p>
+</li>
+<li><p><code>Just</code> 给这个函数传入什么，生成的Observable就产出什么。一般是一个或多个同一类型的对象。</p>
+</li>
+<li><p><code>Range</code> 发送一系列连续的整数。</p>
+</li>
+<li><p><code>Repeat</code> 重复发送一系列对象</p>
+</li>
+<li><p><code>Timer</code> 定时一个时间间隔，然后发送一个值。</p>
+</li>
+</ul>
+<p>以上 Repeat 在 RxJava中不是Observable创建函数，而是对于已有的Observable的修饰。其它都是静态的构造函数，可以方便的构造Observable</p>
+<h2 id="Transforming-Observables"><a href="#Transforming-Observables" class="headerlink" title="Transforming Observables"></a>Transforming Observables</h2><p>用来对Observable所发送的数据进行处理转化的操作符。</p>
+<ul>
+<li><code>Buffer</code> 用来周期性的将事件收集在一起，打包成数组发送给下一级。可以是以数量为周期，时间为周期，也可以自己定义停止Buffer的条件。</li>
+<li><code>FlatMap</code> 把发送 <code>Observable&lt;T&gt;</code> 的 Observable 转化成发送<code>T</code>的Observable，即将两层的Observable压缩成了一层。</li>
+<li><code>GroupBy</code> 通过定义key函数，将一个Observable拆分成多个Observable。一个发送Observable的Observable</li>
+<li><code>Map</code> 最常用的转换操作符，一个口进，一个口出。中间进行一些转化。</li>
+<li><code>Scan</code> 重在两个相邻的事件的关系，将每两个事件之间进行处理和转化<img src="/images/6.27.39.png" alt=""></li>
+<li><code>Window</code> window与Buffer很像，都是对于事件进行收集打包发送，但是与Buffer不同的是，Buffer是返回一个数组，而Window则是返回一个Observable</li>
+</ul>
+<h2 id="Filter-Observables"><a href="#Filter-Observables" class="headerlink" title="Filter Observables"></a>Filter Observables</h2><p>用来选择判断哪些可以通过的操作符。</p>
+<ul>
+<li><p><code>Debounce</code> 每隔一定的时间间隔，才会接收一次事件，其它的事件都会被过滤掉。与throttle很像。<img src="/images/rx_8.13.46.png" alt=""></p>
+</li>
+<li><p><code>Sample</code> 也叫throttle。在一定的事件内，只会接收一次事件。当到达这个时间点后，找这个时间段内第一个/或者最后一个数据，throttleFirst throttleLast。</p>
+</li>
+<li><p><code>Distinct</code> 去除重复的单元。<img src="/images/rx_8.19.02.png" alt=""></p>
+</li>
+<li><p><code>ElementAt</code> 顾名思义，只接收第n个数据。</p>
+</li>
+<li><p><code>Filter</code> 只有经过预先定义的函数，返回true的，才接收。</p>
+</li>
+<li><p><code>First</code> 只接收第一个数据。或者第一个符合要求，返回为true的数据。</p>
+</li>
+<li><p><code>IgnoreElements</code> 不接收任何事件，只在所有事件都完成后通知我。</p>
+</li>
+<li><p><code>Last</code> 只接受最后一个数据。</p>
+</li>
+<li><p><code>Skip</code> 跳过前n个元素</p>
+</li>
+<li><p><code>SkipLast</code> 跳过最后n个元素</p>
+</li>
+<li><p><code>Take</code> 只接收前n个元素</p>
+</li>
+<li><p><code>TakeLast</code> 只接收最后n个元素</p>
+</li>
+</ul>
+<h2 id="Combining-Observable"><a href="#Combining-Observable" class="headerlink" title="Combining Observable"></a>Combining Observable</h2><p>用来把多个事件流合成一个事件流的操作符</p>
+<ul>
+<li><p><code>And</code>/<code>Then</code>/<code>When</code> <img src="/images/rx_and_then_when.C.png" alt=""> RxJava中没有这一函数只在RxJavaJoins库中有。</p>
+</li>
+<li><p><code>StartWith</code> 在发送数据之前，先发送startWith传入的数据。</p>
+</li>
+<li><p><code>CombineLatest</code> 传入两个Observable参数，共同发送信号。每接收到一个数据，都与另一个Observable的最后一个数据一起交给一个预设的函数处理，并继续发送这个函数的结果<img src="/images/rx_8.52.16.png" alt=""></p>
+</li>
+<li><p><code>Join</code> 与<code>CombineLast</code>有些相似，都是选取两个Observable中的各一个值，进行合成运算。只不过join需要为每个数据规定特有的有效期，只有在有效期之内出现对应的另一个Observable的数据，才能进行合成。</p>
+</li>
+<li><p><code>Zip</code> Zip与上面两个相同，也是一个combine操作符。只不过它combine的必须是两个index相同的元素。<img src="/images/rx_9.21.53.png" alt=""></p>
+</li>
+<li><p><code>Merge</code> 把多个Observable的数据统一发向一个接收器，同一个线程的时候，则深度优先。</p>
+</li>
+<li><p><code>Switch</code> 类似于merge。merge是把所有收到的数据，全部发出去，而Switch则是把，每一次有一个Observable通知说，我要开始发信息了，那么Switch就会扔掉前面的Observable，开始只关注这个已经开始的Observable。</p>
+</li>
+</ul>
+<h2 id="Error-Handling-Operators"><a href="#Error-Handling-Operators" class="headerlink" title="Error Handling Operators"></a>Error Handling Operators</h2><p>决定当发生错误时该怎么办的操作符。</p>
+<ul>
+<li><p><code>Catch</code> 在RxJava中叫onErrorResumeNext 如果发生了按这个预定的数据，继续发送下去。</p>
+</li>
+<li><p><code>Retry</code> 再订阅一次，从而重新发送所有的数据。</p>
+</li>
+</ul>
+<h2 id="Observable-Utility-Operators"><a href="#Observable-Utility-Operators" class="headerlink" title="Observable Utility Operators"></a>Observable Utility Operators</h2><p>一些非常有用的工具操作符。</p>
+<ul>
+<li><p><code>Delay</code> 过三秒以后再开始按原样发送数据。</p>
+</li>
+<li><p><code>Do</code> 对Observable生命周期的监听，doOnCompleted doOnEach doOnError 等等的呢过，都是生命周期的回调。</p>
+</li>
+<li><p><code>Materialize</code>/<code>Dematerialize</code> 有一个类叫做Notification，onNext onCompleted这些都算是Notification，Materialize的意思就是当接收到数据，或者onCompleted这样的信号时，通通包装成Notification，交给下一级Subscriber。<code>Dematerialize</code>相反，把Notification拆箱。</p>
+</li>
+<li><p><code>ObserveOn</code> 为观察者的执行指定Scheduler</p>
+</li>
+<li><p><code>Serialize</code> 当Observable的行为比较复杂是，尤其是在使用多个线程，共同向Subscriber中发送信息时，很有可能一个线程执行了onComplete而另一个线程正在执行的onNext还没有返回，或者两个线程同步的执行onNext，这都存在问题。Serialize就是为了解决这样的问题，通过一定的等待，避免这一问题出现。<img src="/images/rx_serialize.c.png" alt=""></p>
+</li>
+<li><p><code>Subscribe</code> 订阅的关键函数。</p>
+</li>
+<li><p><code>SubscribeOn</code> 为事件源的执行指定Scheduler</p>
+</li>
+<li><p><code>TimeInterval</code> 传递时间源之间的时间间隔<img src="/images/rx_timeInterval.c.png" alt=""></p>
+</li>
+<li><p><code>Timeout</code> 两个事件的间隔超过预设时间就报错。</p>
+</li>
+<li><p><code>TimeStamp</code> 对每一个事件进行包装，打上时间戳</p>
+</li>
+<li><p><code>Using</code> 在开始监听的时候，创建Observable同时创建一个资源，同时在Observable完成，或者手动结束订阅的时候，释放资源。</p>
+</li>
+</ul>
+<h2 id="Conditional-and-Boolean-Operators"><a href="#Conditional-and-Boolean-Operators" class="headerlink" title="Conditional and Boolean Operators"></a>Conditional and Boolean Operators</h2><p>对Observable发送的数据进行评估挑选的操作符。</p>
+<ul>
+<li><code>All</code> 判断Observable的所有数据，是否都符合某个条件，向下返回boolean。</li>
+<li><code>Amb</code> 多个Observable进行竞争，第一个开始返回数据的订阅源，以后发送数据，其它停止发送。注意，如果第一个发送的订阅源发送的是onComplete这样的Notification那么就停止。</li>
+<li><code>Contains</code> 判断一个Observable是否发送了特殊的数据。</li>
+<li><code>DefaultIfEmpty</code> 原样发送上级数据源传递过来的数据，如果数据源为空（即直接Complete了），那么就返回默认数据</li>
+<li><code>SequenceEqual</code> 传给这个操作符两个Observable，如果每一个元素都相同，并且顺序也相同，结束的方式也相同(onError onCompleted)，那么就返回true。</li>
+<li><code>SkipUntil</code> 作为一个Observable的实例函数，接收另一个Observable参数，当参数Observable发送信息的时候，开始发送本身数据源的数据<img src="/images/rx_9.21.25.png" alt=""></li>
+<li><code>SkipWhile</code> 传入一个函数作为判断条件，如果条件成立，就跳过这个数据（不往下发送），当条件不成立的时候，后面都发送，包括不成立的这个。<img src="/images/rx_skipWhile.c.png" alt=""></li>
+<li><code>TakeUntil</code> 与 <code>SkipUntil</code> 相对，在另一个Observable没有发数据时，接收，如果开始发数据了，就不接收了。</li>
+<li><code>TakeWhile</code> 与 <code>SkipWhile</code> 相对，当条件成立的时候，接收数据。</li>
+</ul>
+<h2 id="Mathematical-and-Aggregate-Operators"><a href="#Mathematical-and-Aggregate-Operators" class="headerlink" title="Mathematical and Aggregate Operators"></a>Mathematical and Aggregate Operators</h2><p>对Observable返回的所有数据进行处理的操作符。</p>
+<ul>
+<li><code>Concat</code> 顺次连接多个Observable发送的数据，而不是插入<img src="/images/rx_9.35.55.png" alt=""></li>
+<li><code>Count</code> 计算Observable发送数据的数量</li>
+<li><p><code>Reduce</code> 累积计算。传入一个函数，对每两个数据都使用这一函数进行拼接。<img src="/images/rx_9.40.03.png" alt="">注意，上面的例子，如果函数换成 <code>x, y -&gt; x * 10 + y</code> 最后返回的就是 <code>12345</code></p>
+</li>
+<li><p><code>Average</code> 不包含在RxJava基本包中，而包含在RxJava-Math中，取平均值</p>
+</li>
+<li><code>Max</code> 取最大值。在RxJava-Math中。</li>
+<li><code>Min</code> 取最小值。同上</li>
+<li><code>Sum</code> 求和，同上</li>
+</ul>
+<h2 id="Backpressure-Operators"><a href="#Backpressure-Operators" class="headerlink" title="Backpressure Operators"></a>Backpressure Operators</h2><p>不是某一个具体的函数。当Observable产生数据的速度，明显大于Subscriber消耗数据的素的的时候，就需要定义缓存。有一些策略。</p>
+<p>可以缓存下来，等到Subscriber请求的时候再发送，请求一次发送一次。</p>
+<p>也存在其他的策略，比如把过快的扔掉。</p>
+<p>每次请求的时候，只返回最新的数据。</p>
+<h2 id="Connectable-Observable-Operators"><a href="#Connectable-Observable-Operators" class="headerlink" title="Connectable Observable Operators"></a>Connectable Observable Operators</h2><ul>
+<li><code>connect</code> 可连接的Observable (connectable Observable)与普通的Observable差不多，不过它并不会在被订阅时开始发射数据，而是直到使用了Connect操作符时才会开始。用这个方法，你可以等待所有的观察者都订阅了Observable之后再开始发射数据。</li>
+<li><code>Publish</code> 将普通的Observable换换为可连接的Observable</li>
+<li><code>RefCount</code> 让一个可连接的Observable行为像普通的Observable</li>
+<li><code>Replay</code> 保证所有的观察者收到相同的数据序列，即使它们在Observable开始发射数据之后才订阅</li>
+</ul>
+<h2 id="Operators-to-Convert-Observables"><a href="#Operators-to-Convert-Observables" class="headerlink" title="Operators to Convert Observables"></a>Operators to Convert Observables</h2><ul>
+<li><code>To</code> BlockingObservable.from BlockingObservable.getIterator nest toBlocking BlockingObservable.toFuture BlockingObservable.toIterable toList toMap toMultiMap toSortedList<br>都是对与Observable进行简单的变化。</li>
+</ul>
+<h2 id="Single"><a href="#Single" class="headerlink" title="Single"></a>Single</h2><p>不返回一个一个数据，而返回onSuccess 或 onError。</p>
+<h2 id="Subject"><a href="#Subject" class="headerlink" title="Subject"></a>Subject</h2><p>Subject可以看成是一个桥梁或者代理，在某些ReactiveX实现中（如RxJava），它同时充当了Observer和Observable的角色。因为它是一个Observer，它可以订阅一个或多个Observable；又因为它是一个Observable，它可以转发它收到(Observe)的数据，也可以发射新的数据。</p>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a data-url="http://LionelCursor.github.io/2016/02/24/RxJava3/" data-id="cimytk435001266gxrq49oxuf" class="article-share-link">Share</a><div class="tags"><a href="/tags/android/">android</a><a href="/tags/RxJava/">RxJava</a></div><div class="post-nav"><a href="/2016/02/28/zxing-android-client/" class="pre">zxing-android-client</a><a href="/2016/02/24/RxJava2/" class="next">RxJava原理</a></div></div></div></div><div class="pure-u-1-4"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://LionelCursor.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> Categories</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Foundation/">Foundation</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Others/">Others</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记/">学习笔记</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/随笔/">随笔</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> Tags</i></div><div class="tagcloud"><a href="/tags/Interview/" style="font-size: 15px;">Interview</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/SourceCode/" style="font-size: 15px;">SourceCode</a> <a href="/tags/Concurrent/" style="font-size: 15px;">Concurrent</a> <a href="/tags/Canvas/" style="font-size: 15px;">Canvas</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/Alg/" style="font-size: 15px;">Alg</a> <a href="/tags/DataStructure/" style="font-size: 15px;">DataStructure</a> <a href="/tags/Quick-Reference/" style="font-size: 15px;">Quick Reference</a> <a href="/tags/Others/" style="font-size: 15px;">Others</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/Summary/" style="font-size: 15px;">Summary</a> <a href="/tags/Debug/" style="font-size: 15px;">Debug</a> <a href="/tags/RxJava/" style="font-size: 15px;">RxJava</a> <a href="/tags/OpenSource/" style="font-size: 15px;">OpenSource</a> <a href="/tags/GitHub/" style="font-size: 15px;">GitHub</a> <a href="/tags/计算机网络/" style="font-size: 15px;">计算机网络</a> <a href="/tags/日志/" style="font-size: 15px;">日志</a> <a href="/tags/web/" style="font-size: 15px;">web</a> <a href="/tags/alg/" style="font-size: 15px;">alg</a> <a href="/tags/读书笔记/" style="font-size: 15px;">读书笔记</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> Recent</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/04/01/用JUnit与Mock框架对Android项目进行单元测试/">用JUnit与Mock框架对Android项目进行单元测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/19/onCreate方法的一次debug/">onCreate方法的一次debug</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/01/Logger-in-xUtils/">Logger in xUtils</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/29/computer_network/">计算机网络知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/28/LeakCanary原理分析/">LeakCanary原理分析 [转载]</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/28/zxing-android-client/">zxing-android-client</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/24/RxJava3/">ReactiveX Operator 总结 及其它重要概念</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/24/RxJava2/">RxJava原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/22/RxJava/">RxJava基础应用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/02/22/初试ios开发/">初试ios开发</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> Blogroll</i></div><ul></ul><a href="http://github.com/LionelCursor" title="我的github" target="_blank">我的github</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">© <a href="/." rel="nofollow">Damon Lei.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="/css/jquery.fancybox.css?v=0.0.0"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?06d5a7998bcfa3c5d037974c6aa847fc";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();
+</script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
